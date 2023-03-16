@@ -200,13 +200,18 @@ public:
   }
 
   // Конструкторы от других и присваивания
-  bimap(bimap const& other) : tree<detail::left_tag>{}, tree<detail::right_tag>{} {
+  bimap(bimap const& other) : tree<detail::left_tag>{*other.template splay_tree<detail::left_tag>()}, tree<detail::right_tag>{*other.template splay_tree<detail::right_tag>()} {
     p = this; // initialize fake node
     if (other.empty()) {
       return;
     }
-    for (left_iterator it = other.begin_left(); it != other.end_left(); it++) {
-      insert(*it, *(it.flip()));
+    try {
+      for (left_iterator it = other.begin_left(); it != other.end_left(); it++) {
+        insert(*it, *(it.flip()));
+      }
+    } catch(...) {
+      clear();
+      throw;
     }
   }
 

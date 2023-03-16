@@ -3,8 +3,6 @@
 #include <cassert>
 #include <utility>
 
-#include "member_switches.h"
-
 namespace detail {
 
 // One base for all splay_node instantiations
@@ -69,16 +67,15 @@ private:
 template <typename T, typename Comparator, typename Tag>
 struct splay_tree : Comparator {
 public:
-
-  splay_tree() = default;
-
-  template<typename = void>
+  template<typename U = Comparator, typename = std::enable_if_t<std::is_copy_constructible_v<U>>>
   splay_tree(const Comparator& other) : Comparator{other} {}
 
-  template<typename = void>
+  template<typename U = Comparator, typename = std::enable_if_t<std::is_move_constructible_v<U>>>
   splay_tree(Comparator&& other) : Comparator{std::move(other)} {}
 
+  splay_tree() = default;
   splay_tree(splay_tree&&) = default;
+  splay_tree(const splay_tree&) = default;
   splay_tree& operator=(const splay_tree&) = default;
   splay_tree& operator=(splay_tree&&) = default;
 
